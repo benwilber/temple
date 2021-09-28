@@ -1,6 +1,6 @@
 # `temple`
 
-A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a suitable presentation format, such as HTML.  It's a basic, yet flexible, tool that can be extended with [Lua](https://www.lua.org/) to perform any kind of advanced templating task from the commandline or a shell pipeline.
+A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.  It's a basic, yet flexible tool that can be extended with [Lua](https://www.lua.org/) to perform any kind of advanced templating task from the commandline or a shell pipeline.
 
 In addition to JSON, `temple` can also read context inputs as YAML, simple `KEY=value`, as well as from the environment.  It is often used as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Heroku-ish type environments.
 

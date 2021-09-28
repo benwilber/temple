@@ -119,6 +119,21 @@ fn render_template(
     Ok(rendered)
 }
 
+fn guess_context_format(path: &Path) -> ContextFormat {
+    return match path
+        .extension()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_lowercase()
+        .as_str()
+    {
+        "json" => ContextFormat::Json,
+        "yaml" | "yml" => ContextFormat::Yaml,
+        _ => ContextFormat::Unknown,
+    };
+}
+
 fn main() {
     let cli = load_yaml!("cli.yml");
     let matches = App::from_yaml(cli).get_matches();
@@ -126,9 +141,7 @@ fn main() {
     let mut templates: Vec<Template>;
 
     if matches.is_present("no_autoescape") {
-        env.set_auto_escape_callback(|_| {
-            minijinja::AutoEscape::None
-        });
+        env.set_auto_escape_callback(|_| minijinja::AutoEscape::None);
     }
 
     if let Some(templates_root_dir) = matches.value_of("templates") {
@@ -145,12 +158,12 @@ fn main() {
             templates.push(Template {
                 name: root_template.to_string(),
                 path: Some(root_template_path.to_path_buf()),
-                source: source,
+                source,
             });
         }
         Err(e) => {
             let msg = format!("{}: {}", root_template_path.display(), e);
-            error_exit(&msg, exitcode::IOERR);
+            return error_exit(&msg, exitcode::IOERR);
         }
     }
 
@@ -201,18 +214,7 @@ fn main() {
                 let path = Path::new(context_file_path);
 
                 if context_format == ContextFormat::Unknown {
-                    match path
-                        .extension()
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .to_lowercase()
-                        .as_str()
-                    {
-                        "json" => context_format = ContextFormat::Json,
-                        "yaml" | "yml" => context_format = ContextFormat::Yaml,
-                        _ => {}
-                    }
+                    context_format = guess_context_format(path);
                 }
 
                 match std::fs::read_to_string(path) {
@@ -227,8 +229,10 @@ fn main() {
     }
 
     if context_format == ContextFormat::Unknown {
-        let msg = format!("unknown or ambiguous context input format.  Try adding --format=<format>");
-        return error_exit(&msg, exitcode::USAGE);
+        return error_exit(
+            "unknown or ambiguous context input format.  Try adding --format=<format>",
+            exitcode::USAGE,
+        );
     }
 
     let template = env.get_template(root_template).unwrap();
