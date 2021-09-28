@@ -34,7 +34,7 @@ args:
         long: output
         value_name: FILE
         help: >
-            The rendered output file.  The file must not already exist.  If FILE is a single dash ("-"), or absent,
+            The rendered output file.  If FILE is a single dash ("-"), or absent,
             writes to the standard output
         takes_value: true
         default_value: "-"
@@ -51,12 +51,12 @@ args:
         help: >
             Disables template autoescaping.  When autoescaping is on, which is the default, special characters in context input values will be escaped when
             rendering template files that end with .html, .htm, or .xml.
-    # - load:
-    #    short: l
-    #     long: load
-    #     value_name: PATH
-    #     help: >
-    #         The Lua file or directory to load custom filters.  If PATH is a directory, then load the file "init.lua" located at the top-level
+    - load:
+        short: l
+        long: load
+        value_name: PATH
+        help: >
+            The Lua file or directory to load custom scripts.  If PATH is a directory, then load the file "init.lua" located at the top-level
     - TEMPLATE:
         help: The template file to render with the given context input
         required: true
