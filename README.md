@@ -2,18 +2,18 @@
 
 A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.  It's a basic, yet flexible tool that can be extended with [Lua](https://www.lua.org/) to perform any kind of advanced templating task from the commandline or a shell pipeline.
 
-In addition to JSON, `temple` can also read context inputs as YAML, simple `KEY=value`, as well as from the environment.  It is often used as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Heroku-ish type environments.
+In addition to JSON, `temple` can also read context inputs as YAML, simple `KEY=value`, as well as from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Heroku-ish type environments.
 
-Templates are rendered using [minijinja](https://github.com/mitsuhiko/minijinja), a port of the [Jinja2](https://jinja2docs.readthedocs.io/en/stable/) Python templating library.  `temple` supports any of the templating features that `minijinja` supports.  Visit those docs for more comprehensive examples and information about the templating language.
+Templates are rendered using [minijinja](https://github.com/mitsuhiko/minijinja), a port of the [Jinja2](https://jinja2docs.readthedocs.io/en/stable/) Python templating library for Rust.  `temple` supports any of the templating features that `minijinja` supports.  Visit those docs for more comprehensive examples and documentation about the templating language.
 
-`temple` also supports loading custom template filters from Lua scripts.  See the examples in [Lua scripting](#lua-scripting) for more information.
+`temple` supports loading custom template filters from Lua scripts.  See the examples in [Lua scripting](#lua-scripting) for more information.
 
 
 # Basic examples
 ```sh
-$ curl -s https://sunspot.io/time.json | temple -f json datetime.html
+$ curl -s https://sunspot.io/time.json | temple -F json datetime.html
 ```
-#### Context input (`time.json`):
+#### Context input - `time.json`
 
 ```json
 {
@@ -21,7 +21,7 @@ $ curl -s https://sunspot.io/time.json | temple -f json datetime.html
 }
 ```
 
-#### Template (`datetime.html`):
+#### Template - `datetime.html`
 
 ```html
 <!DOCTYPE html>
@@ -35,7 +35,7 @@ $ curl -s https://sunspot.io/time.json | temple -f json datetime.html
 </html>
 ```
 
-#### Rendered:
+#### Rendered
 
 ```html
 <!DOCTYPE html>
@@ -55,13 +55,15 @@ $ curl -s https://sunspot.io/time.json | temple -f json datetime.html
 $ temple --help
 temple 0.1.0
 Ben Wilber <benwilber@gmail.com>
-Template renderer
+A commandline program that renders template files with structured context inputs
 
 USAGE:
     temple [FLAGS] [OPTIONS] <TEMPLATE>
 
 FLAGS:
     -e, --env              Reads context input from the environment
+    -f, --force            Overwrites output files if they already exist.  By default, the program will not overwite
+                           files that already exist
     -h, --help             Prints help information
     -n, --no-autoescape    Disables template autoescaping.  When autoescaping is on, which is the default, special
                            characters in context input values will be escaped when rendering template files that end
@@ -72,9 +74,12 @@ OPTIONS:
     -c, --context <FILE>           The context input file.  If FILE is a single dash ("-"), or absent, reads from the
                                    standard input
                                     [default: -]
-    -f, --format <FORMAT>          The context input format
+    -F, --format <FORMAT>          The context input format.  The program will normally try to discover the context
+                                   input format automatically. But if that doesn't work, or yields unexpected results,
+                                   then this option can be given explicitly.  This is most often required when reading
+                                   context input from the standard input
                                     [possible values: json, yaml, kv]
-    -l, --load <PATH>              The Lua file or directory to load custom scripts.  If PATH is a directory, then load
+    -l, --load <PATH>              The Lua file or directory to load custom scripts.  If PATH is a directory, then loads
                                    the file "init.lua" located at the top-level
     -o, --output <FILE>            The rendered output file.  If FILE is a single dash ("-"), or absent, writes to the
                                    standard output

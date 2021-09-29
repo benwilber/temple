@@ -1,7 +1,7 @@
 name: temple
 version: "0.1.0"
 author: Ben Wilber <benwilber@gmail.com>
-about: Template renderer
+about: A commandline program that renders template files with structured context inputs
 args:
     - env:
         short: e
@@ -19,11 +19,13 @@ args:
         takes_value: true
         default_value: "-"
     - format:
-        short: f
+        short: F
         long: format
         value_name: FORMAT
         help: >
-            The context input format
+            The context input format.  The program will normally try to discover the context input format automatically.
+            But if that doesn't work, or yields unexpected results, then this option can be given explicitly.  This is most often
+            required when reading context input from the standard input
         takes_value: true
         possible_values:
             - json
@@ -38,6 +40,10 @@ args:
             writes to the standard output
         takes_value: true
         default_value: "-"
+    - force:
+        short: f
+        long: force
+        help: Overwrites output files if they already exist.  By default, the program will not overwite files that already exist
     - templates:
         short: t
         long: templates
@@ -56,7 +62,7 @@ args:
         long: load
         value_name: PATH
         help: >
-            The Lua file or directory to load custom scripts.  If PATH is a directory, then load the file "init.lua" located at the top-level
+            The Lua file or directory to load custom scripts.  If PATH is a directory, then loads the file "init.lua" located at the top-level
     - TEMPLATE:
         help: The template file to render with the given context input
         required: true

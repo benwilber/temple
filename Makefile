@@ -16,10 +16,10 @@ lint: addrustfmt addclippy
 doc:
 	cargo doc
 
-test: addrustfmt
+test:
 	cargo test
 
-testall: addrustfmt
+testall:
 	cargo test --all-features
 
 testcli: build
@@ -27,6 +27,9 @@ testcli: build
 
 testclirelease: release
 	cd tests && TEMPLE="$(shell pwd)/target/release/temple" bats tests.bats
+
+ready: format lint testcli
+	@echo "Ready!"
 
 addrustfmt:
 	@rustup component add rustfmt 2> /dev/null

@@ -3,7 +3,8 @@ extern crate clap;
 use clap::App;
 use minijinja::Environment;
 use std::collections::HashMap;
-use std::io::{self, Read};
+use std::fs::OpenOptions;
+use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
@@ -230,7 +231,7 @@ fn main() {
 
     if context_format == ContextFormat::Unknown {
         return error_exit(
-            "unknown or ambiguous context input format.  Try adding --format=<format>",
+            "unknown or ambiguous context input format.  Try adding -F/--format=<format>",
             exitcode::USAGE,
         );
     }
@@ -238,9 +239,30 @@ fn main() {
     let template = env.get_template(root_template).unwrap();
 
     match render_template(template, context_format, context_source) {
-        Ok(rendered) => {
-            print!("{}", rendered);
-        }
+        Ok(rendered) => match matches.value_of("output") {
+            Some("-") | None => {
+                print!("{}", rendered);
+            }
+            Some(output) => {
+                let open_result;
+
+                if matches.is_present("force") {
+                    open_result = OpenOptions::new().write(true).create(true).open(output);
+                } else {
+                    open_result = OpenOptions::new().write(true).create_new(true).open(output);
+                }
+
+                match open_result {
+                    Ok(f) => {
+                        write!(&f, "{}", &rendered).unwrap();
+                    }
+                    Err(e) => {
+                        let msg = format!("{}: {}", output, e);
+                        error_exit(&msg, exitcode::CANTCREAT);
+                    }
+                }
+            }
+        },
         Err(e) => {
             let msg = format!("{}", e);
             error_exit(&msg, exitcode::DATAERR);
