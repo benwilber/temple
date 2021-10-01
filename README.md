@@ -2,11 +2,11 @@
 
 A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.  It's a basic, yet flexible tool that can be extended with [Lua](https://www.lua.org/) to perform any kind of advanced templating task from the commandline or a shell pipeline.
 
-In addition to JSON, `temple` can also read context inputs as YAML, simple `KEY=value`, as well as from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Heroku-ish type environments.
+In addition to JSON, `temple` can also read context inputs as YAML, simple `KEY=value`, and from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Heroku-ish type environments.
 
-Templates are rendered using [minijinja](https://github.com/mitsuhiko/minijinja), a port of the [Jinja2](https://jinja2docs.readthedocs.io/en/stable/) Python templating library for Rust.  `temple` supports any of the templating features that `minijinja` supports.  Visit those docs for more comprehensive examples and documentation about the templating language.
+Templates are rendered using [MiniJinja](https://github.com/mitsuhiko/minijinja), a port of the [Jinja2](https://jinja2docs.readthedocs.io/en/stable/) Python templating library for Rust.  `temple` supports any of the templating features that MiniJinja supports.  Visit those docs for more comprehensive examples and documentation about the templating language.
 
-`temple` supports loading custom template filters from Lua scripts.  See the examples in [Lua scripting](#lua-scripting) for more information.
+`temple` supports loading custom template filters from Lua scripts.  See the examples in the [Lua scripting](#lua-scripting) section for more information.
 
 
 # Basic examples
@@ -65,7 +65,7 @@ FLAGS:
     -f, --force            Overwrites output files if they already exist.  By default, the program will not overwite
                            files that already exist
     -h, --help             Prints help information
-    -n, --no-autoescape    Disables template autoescaping.  When autoescaping is on, which is the default, special
+    -n, --no-auto-escape    Disables template autoescaping.  When auto-escaping is on, which is the default, special
                            characters in context input values will be escaped when rendering template files that end
                            with .html, .htm, or .xml.
     -V, --version          Prints version information
@@ -114,8 +114,8 @@ bats tests/tests.bats
  ✓ invalid-yaml-malformed
  ✓ extends
  ✓ include
- ✓ autoescape
- ✓ no-autoescape
+ ✓ -escape
+ ✓ no-auto-escape
 
 17 tests, 0 failures
 ```
@@ -126,11 +126,11 @@ bats tests/tests.bats
 
 # Acknowledgments
 
-* [minijinja](https://github.com/mitsuhiko/minijinja)
+* [MiniJinja](https://github.com/mitsuhiko/minijinja)
 * [rlua](https://github.com/amethyst/rlua)
 
 # Reporting bugs
-Report bugs in the [bug tracker](https://github.com/benwilber/temple/issues).
+Report bugs in the [bug tracker](https://github.com/benwilber/temple/issues)
 
 # Copyright
 [Apache](LICENSE)

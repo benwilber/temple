@@ -26,7 +26,7 @@ testcli: build
 	cd tests && TEMPLE="$(shell pwd)/target/debug/temple" bats tests.bats
 
 testclirelease: release
-	TEMPLE="$(shell pwd)/target/release/temple" bats tests.bats
+	cd tests && TEMPLE="$(shell pwd)/target/release/temple" bats tests.bats
 
 ready: format lint testcli
 	@echo "Ready!"

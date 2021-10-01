@@ -51,11 +51,11 @@ args:
         help: >
             The directory to search for additional templates for use with "{% extends ... %}" or "{% include ... %}" template tags
         takes_value: true
-    - no_autoescape:
+    - no_auto_escape:
         short: n
-        long: no-autoescape
+        long: no-auto-escape
         help: >
-            Disables template autoescaping.  When autoescaping is on, which is the default, special characters in context input values will be escaped when
+            Disables template auto-escaping.  When auto-escaping is on, which is the default, special characters in context input values will be escaped when
             rendering template files that end with .html, .htm, or .xml.
     - load:
         short: l

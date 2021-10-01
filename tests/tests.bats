@@ -89,14 +89,14 @@
     [[ $output == "INCLUDE: bar" ]]
 }
 
-@test "autoescape" {
-    run $TEMPLE --context=contexts/autoescape.json --templates=templates templates/autoescape.html
+@test "auto-escape" {
+    run $TEMPLE --context=contexts/auto_escape.json --templates=templates templates/auto_escape.html
     [[ $status == 0 ]]
     [[ $output == "&lt;script&gt;bar&lt;/script&gt;" ]]
 }
 
-@test "no-autoescape" {
-    run $TEMPLE --no-autoescape --context=contexts/autoescape.json --templates=templates templates/autoescape.html
+@test "no-auto-escape" {
+    run $TEMPLE --no-auto-escape --context=contexts/auto_escape.json --templates=templates templates/auto_escape.html
     [[ $status == 0 ]]
     [[ $output == "<script>bar</script>" ]]
 }

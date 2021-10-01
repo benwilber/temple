@@ -2,7 +2,7 @@
 extern crate clap;
 use clap::App;
 use minijinja::Environment;
-use rlua::{Lua, Table};
+use rlua::{Function, Lua, Table};
 use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::{self, Read, Write};
@@ -136,34 +136,45 @@ fn guess_context_format(path: &Path) -> ContextFormat {
     };
 }
 
-fn load_lua(_env: &mut Environment, load_path: &Path) -> anyhow::Result<()> {
-    let user_script;
-
-    if load_path.is_dir() {
-        user_script = std::fs::read_to_string(load_path.join("init.lua"))?;
-    } else {
-        user_script = std::fs::read_to_string(load_path)?;
-    }
-
-    let lua = Lua::new();
-
+fn setup_lua_package_path(lua: &Lua, load_path: &Path) -> anyhow::Result<()> {
     lua.context::<_, anyhow::Result<()>>(|ctx| {
         let globals = ctx.globals();
+        let package: Table = globals.get("package")?;
+        let package_path: String = package.get("path")?;
+        package.set(
+            "path",
+            format!("{}/?.lua;{}", load_path.display(), package_path),
+        )?;
 
+        Ok(())
+    })?;
+
+    Ok(())
+}
+
+fn build_lua_script(user_script: &str) -> anyhow::Result<String> {
+    let temple_script = include_str!("temple.lua");
+    Ok(format!("{}\n{}", &temple_script, &user_script))
+}
+
+fn load_lua_scripts(lua: &Lua, load_path: Option<&Path>) -> anyhow::Result<()> {
+    let user_script;
+
+    if let Some(load_path) = load_path {
         if load_path.is_dir() {
-            let package: Table = globals.get("package")?;
-            let package_path: String = package.get("path")?;
-            package.set(
-                "path",
-                format!("{}/?.lua;{}", load_path.display(), package_path),
-            )?;
+            setup_lua_package_path(lua, load_path)?;
+            user_script = std::fs::read_to_string(load_path.join("init.lua"))?;
+        } else {
+            user_script = std::fs::read_to_string(load_path)?;
         }
+    } else {
+        user_script = String::new();
+    }
 
-        let temple_script = include_str!("temple.lua");
-        let s = format!("{}\n{}", &temple_script, &user_script);
-        //print!("{}", s);
-        ctx.load(&s).exec()?;
+    let final_script = build_lua_script(&user_script)?;
 
+    lua.context::<_, anyhow::Result<()>>(|ctx| {
+        ctx.load(&final_script).exec()?;
         Ok(())
     })?;
 
@@ -175,9 +186,17 @@ fn main() {
     let matches = App::from_yaml(cli).get_matches();
     let mut env = Environment::new();
     let mut templates: Vec<Template>;
+    let lua = Lua::new();
 
     if let Some(load_path) = matches.value_of("load") {
-        load_lua(&mut env, Path::new(load_path))
+        load_lua_scripts(&lua, Some(Path::new(load_path)))
+            .map_err(|e| {
+                let msg = format!("{}", e);
+                error_exit(&msg, exitcode::SOFTWARE);
+            })
+            .unwrap();
+    } else {
+        load_lua_scripts(&lua, None)
             .map_err(|e| {
                 let msg = format!("{}", e);
                 error_exit(&msg, exitcode::SOFTWARE);
@@ -185,7 +204,37 @@ fn main() {
             .unwrap();
     }
 
-    if matches.is_present("no_autoescape") {
+    /*
+    let mut filters = Vec::new();
+
+    lua.context::<_, anyhow::Result<()>>(|ctx| {
+        let globals = ctx.globals();
+        let temple_table: Table = globals.get("temple")?;
+        let filters_table: Table = temple_table.get("filters")?;
+
+        for pair in filters_table.pairs::<String, Function>() {
+            let (name, _func) = pair?;
+            filters.push(name);
+        }
+
+        for name in &filters {
+            env.add_filter(
+                name,
+                |_env: &Environment,
+                 v: String,
+                 s: String|
+                 -> anyhow::Result<String, minijinja::Error> {
+                    Ok(name.to_string())
+                },
+            );
+        }
+
+        Ok(())
+    })
+    .unwrap();
+    */
+
+    if matches.is_present("no_auto_escape") {
         env.set_auto_escape_callback(|_| minijinja::AutoEscape::None);
     }
 

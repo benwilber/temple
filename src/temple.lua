@@ -2,14 +2,8 @@
 This Lua script implements the plugin runtime of the temple program.
 
 It defines a single global table, `temple`, that has methods and attributes
-for registering filters and callbacks, fine-grained control of autoescaping,
+for registering filters and callbacks, fine-grained control of auto-escaping,
 and more.
-
-The program tries to minimize (as much as possible) the number of places where
-Lua values have to cross the boundary into Rust values.  For the most part,
-we try to keep Lua stuff on the Lua side, and Rust stuff on the Rust side.  The
-main exception to this rule is values given to custom template filter functions
-that are implemented in Lua.  
 --]]
 temple = {
     filters = {},
