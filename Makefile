@@ -7,10 +7,10 @@ release:
 	cargo build --release
 
 format: addrustfmt
-	cargo fmt --all
+	cargo fmt
 
 lint: addrustfmt addclippy
-	cargo fmt --all -- --check
+	cargo fmt -- --check
 	cargo clippy
 
 doc:
@@ -26,7 +26,7 @@ testcli: build
 	cd tests && TEMPLE="$(shell pwd)/target/debug/temple" bats tests.bats
 
 testclirelease: release
-	cd tests && TEMPLE="$(shell pwd)/target/release/temple" bats tests.bats
+	TEMPLE="$(shell pwd)/target/release/temple" bats tests.bats
 
 ready: format lint testcli
 	@echo "Ready!"

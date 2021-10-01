@@ -2,7 +2,7 @@
 extern crate clap;
 use clap::App;
 use minijinja::Environment;
-use rlua::{Function, Lua, Table};
+use rlua::{Lua, Table};
 use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::{self, Read, Write};
@@ -137,12 +137,12 @@ fn guess_context_format(path: &Path) -> ContextFormat {
 }
 
 fn load_lua(_env: &mut Environment, load_path: &Path) -> anyhow::Result<()> {
-    let script;
+    let user_script;
 
     if load_path.is_dir() {
-        script = std::fs::read_to_string(load_path.join("init.lua"))?;
+        user_script = std::fs::read_to_string(load_path.join("init.lua"))?;
     } else {
-        script = std::fs::read_to_string(load_path)?;
+        user_script = std::fs::read_to_string(load_path)?;
     }
 
     let lua = Lua::new();
@@ -150,23 +150,19 @@ fn load_lua(_env: &mut Environment, load_path: &Path) -> anyhow::Result<()> {
     lua.context::<_, anyhow::Result<()>>(|ctx| {
         let globals = ctx.globals();
 
-        if load_path.is_dir(){
+        if load_path.is_dir() {
             let package: Table = globals.get("package")?;
-            let mut package_path: String = package.get("path")?;
-            package_path = format!("{};{}/?.lua", load_path);
-            package.set("path", package_path);
+            let package_path: String = package.get("path")?;
+            package.set(
+                "path",
+                format!("{}/?.lua;{}", load_path.display(), package_path),
+            )?;
         }
 
-        let temple_table = ctx.create_table()?;
-
-        let add_filter = ctx.create_function(|_ctx, (name, _func): (String, Function)| {
-            eprintln!("Added filter: {}", name);
-            Ok(())
-        })?;
-
-        temple_table.set("addfilter", add_filter)?;
-        globals.set("temple", temple_table)?;
-        ctx.load(&script).exec()?;
+        let temple_script = include_str!("temple.lua");
+        let s = format!("{}\n{}", &temple_script, &user_script);
+        //print!("{}", s);
+        ctx.load(&s).exec()?;
 
         Ok(())
     })?;
@@ -181,7 +177,12 @@ fn main() {
     let mut templates: Vec<Template>;
 
     if let Some(load_path) = matches.value_of("load") {
-        load_lua(&mut env, Path::new(load_path)).unwrap();
+        load_lua(&mut env, Path::new(load_path))
+            .map_err(|e| {
+                let msg = format!("{}", e);
+                error_exit(&msg, exitcode::SOFTWARE);
+            })
+            .unwrap();
     }
 
     if matches.is_present("no_autoescape") {
