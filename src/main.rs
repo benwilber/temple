@@ -152,29 +152,35 @@ fn setup_lua_package_path(lua: &Lua, load_path: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn build_lua_script(user_script: &str) -> anyhow::Result<String> {
-    let temple_script = include_str!("temple.lua");
-    Ok(format!("{}\n{}", &temple_script, &user_script))
+fn build_lua_script(temple_script: &str, user_script: Option<&str>) -> String {
+    if let Some(user_script) = user_script {
+        format!("{}\n{}", &temple_script, &user_script)
+    } else {
+        temple_script.to_string()
+    }
 }
 
 fn load_lua_scripts(lua: &Lua, load_path: Option<&Path>) -> anyhow::Result<()> {
-    let user_script;
+    let temple_script = include_str!("temple.lua");
+    let lua_script;
 
     if let Some(load_path) = load_path {
+        let user_script;
+
         if load_path.is_dir() {
             setup_lua_package_path(lua, load_path)?;
             user_script = std::fs::read_to_string(load_path.join("init.lua"))?;
         } else {
             user_script = std::fs::read_to_string(load_path)?;
         }
+
+        lua_script = build_lua_script(temple_script, Some(&user_script));
     } else {
-        user_script = String::new();
+        lua_script = build_lua_script(temple_script, None);
     }
 
-    let final_script = build_lua_script(&user_script)?;
-
     lua.context::<_, anyhow::Result<()>>(|ctx| {
-        ctx.load(&final_script).exec()?;
+        ctx.load(&lua_script).exec()?;
         Ok(())
     })?;
 
