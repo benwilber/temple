@@ -4,9 +4,9 @@ author: Ben Wilber <benwilber@gmail.com>
 about: A commandline program that renders template files with structured context inputs
 args:
     - env:
-        short: e
+        short: E
         long: env
-        help: Reads context input from the environment
+        help: Reads context input from environment variables
         conflicts_with:
             - context
             - format
@@ -31,6 +31,7 @@ args:
             - json
             - yaml
             - kv
+        env: TEMPLE_CONTEXT_FORMAT
     - output:
         short: o
         long: output
@@ -49,20 +50,32 @@ args:
         long: templates
         value_name: DIRECTORY
         help: >
-            The directory to search for additional templates for use with "{% extends ... %}" or "{% include ... %}" template tags
+            The directory to search for additional templates when using "{% extends ... %}" or "{% include ... %}" template tags
         takes_value: true
+        env: TEMPLE_TEMPLATES_PATH
+    - extensions:
+        short: e
+        long: extensions
+        value_name: EXTENSIONS
+        help: >
+            The list of file extensions that are considered to be templates.  Hidden files are always ignored.
+            Separate multiple file extensions with a comma (",")
+        takes_value: true
+        default_value: "htm,html,txt"
+        env: TEMPLE_TEMPLATE_EXTENSIONS
     - no_auto_escape:
         short: n
         long: no-auto-escape
         help: >
             Disables template auto-escaping.  When auto-escaping is on, which is the default, special characters in context input values will be escaped when
-            rendering template files that end with .html, .htm, or .xml.
-    - load:
+            rendering template files that end with .htm, .html, or .xml.
+    - load_lua:
         short: l
-        long: load
+        long: load-lua
         value_name: PATH
         help: >
-            The Lua file or directory to load custom scripts.  If PATH is a directory, then loads the file "init.lua" located at the top-level
+            The file or directory to load custom Lua scripts.  If PATH is a directory, then loads the file "init.lua" located at the top-level
+        env: TEMPLE_LOAD_LUA_PATH
     - TEMPLATE:
         help: The template file to render with the given context input
         required: true

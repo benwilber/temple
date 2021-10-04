@@ -22,11 +22,13 @@ test:
 testall:
 	cargo test --all-features
 
+testcli: TEMPLE ?= "$(shell pwd)/target/debug/temple"
 testcli: build
-	cd tests && TEMPLE="$(shell pwd)/target/debug/temple" bats tests.bats
+	cd tests && TEMPLE=$(TEMPLE) bats tests.bats
 
+testclirelease: TEMPLE ?= "$(shell pwd)/target/release/temple"
 testclirelease: release
-	cd tests && TEMPLE="$(shell pwd)/target/release/temple" bats tests.bats
+	cd tests && TEMPLE=$(TEMPLE) bats tests.bats
 
 ready: format lint testcli
 	@echo "Ready!"

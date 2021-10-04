@@ -1,1 +1,1 @@
-BASE: {% block base %}{{ FOO }}{% endblock base %}
+EXTENDS: {% block base %}{{ FOO }}{% endblock base %}
