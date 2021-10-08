@@ -12,7 +12,6 @@ use std::path::Path;
 enum ContextFormat {
     Json,
     Yaml,
-    Kv,
     Env,
     Unknown,
 }
@@ -27,18 +26,6 @@ fn read_stdin() -> anyhow::Result<String> {
     let mut stdin = io::stdin();
     stdin.read_to_string(&mut s)?;
     Ok(s)
-}
-
-fn parse_kv(s: &str) -> anyhow::Result<HashMap<String, String>> {
-    let mut kv = HashMap::new();
-
-    for line in s.lines() {
-        if let Some((k, v)) = line.split_once("=") {
-            kv.insert(k.trim().to_string(), v.trim().to_string());
-        }
-    }
-
-    Ok(kv)
 }
 
 fn guess_context_format(path: &Path) -> ContextFormat {
@@ -103,7 +90,6 @@ fn main() {
             match format.to_lowercase().as_str() {
                 "json" => context_format = ContextFormat::Json,
                 "yaml" | "yml" => context_format = ContextFormat::Yaml,
-                "kv" => context_format = ContextFormat::Kv,
                 _ => {}
             }
         }
@@ -171,10 +157,6 @@ fn main() {
             };
             rendered = tmpl.render(context).unwrap();
         }
-        (ContextFormat::Kv, Some(context_content)) => {
-            let context = parse_kv(&context_content).unwrap();
-            rendered = tmpl.render(context).unwrap();
-        }
         (ContextFormat::Env, None) => {
             let mut context = HashMap::new();
 
@@ -184,9 +166,7 @@ fn main() {
 
             rendered = tmpl.render(context).unwrap();
         }
-        _ => {
-            panic!("unknown context input format");
-        }
+        _ => unreachable!(),
     }
 
     match matches.value_of("output") {

@@ -1,7 +1,7 @@
 name: temple
 version: "0.1.0"
 author: Ben Wilber <benwilber@gmail.com>
-about: A commandline program that renders template files with structured context inputs
+about: Commandline template renderer
 args:
     - env:
         short: E
@@ -24,13 +24,12 @@ args:
         value_name: FORMAT
         help: >
             The context input format.  The program will normally try to discover the context input format automatically.
-            But if that doesn't work, or yields unexpected results, then this option can be given explicitly.  This is most often
+            If that doesn't work, or yields unexpected results, then this option can be given explicitly.  This is most often
             required when reading context input from the standard input
         takes_value: true
         possible_values:
             - json
             - yaml
-            - kv
         env: TEMPLE_CONTEXT_FORMAT
     - output:
         short: o
@@ -69,13 +68,6 @@ args:
         help: >
             Disables template auto-escaping.  When auto-escaping is on, which is the default, special characters in context input values will be escaped when
             rendering template files that end with .htm, .html, or .xml.
-    - load_lua:
-        short: l
-        long: load-lua
-        value_name: PATH
-        help: >
-            The file or directory to load custom Lua scripts.  If PATH is a directory, then loads the file "init.lua" located at the top-level
-        env: TEMPLE_LOAD_LUA_PATH
     - TEMPLATE:
         help: The template file to render with the given context input
         required: true

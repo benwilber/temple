@@ -36,24 +36,6 @@
     [[ $output == "bar" ]]
 }
 
-@test "kv-stdin" {
-    run $TEMPLE --format=kv templates/simple.txt < contexts/simple_kv.txt
-    [[ $status == 0 ]]
-    [[ $output == "bar" ]]
-
-    run $TEMPLE --context=- --format=kv templates/simple.txt < contexts/simple_kv.txt
-    [[ $status == 0 ]]
-    [[ $output == "bar" ]]
-
-    run $TEMPLE -F kv templates/simple.txt < contexts/simple_kv.txt
-    [[ $status == 0 ]]
-    [[ $output == "bar" ]]
-
-    run $TEMPLE --format=kv templates/simple.txt <<< "FOO = bar"
-    [[ $status == 0 ]]
-    [[ $output == "bar" ]]
-}
-
 @test "json-file" {
     run $TEMPLE --context=contexts/simple.json templates/simple.txt
     [[ $status == 0 ]]
@@ -74,16 +56,6 @@
     [[ $output == "bar" ]]
 }
 
-@test "kv-file" {
-    run $TEMPLE --context=contexts/simple_kv.txt --format=kv templates/simple.txt
-    [[ $status == 0 ]]
-    [[ $output == "bar" ]]
-
-    run $TEMPLE -c contexts/simple_kv.txt --format=kv templates/simple.txt
-    [[ $status == 0 ]]
-    [[ $output == "bar" ]]
-}
-
 @test "json-empty" {
     run $TEMPLE --format=json templates/simple.txt <<< "{}"
     [[ $status == 0 ]]
@@ -92,12 +64,6 @@
 
 @test "yaml-empty" {
     run $TEMPLE --format=yaml templates/simple.txt <<< "-"
-    [[ $status == 0 ]]
-    [[ $output == "" ]]
-}
-
-@test "kv-empty" {
-    run $TEMPLE --format=kv --context=contexts/invalid_malformed_kv.txt templates/simple.txt
     [[ $status == 0 ]]
     [[ $output == "" ]]
 }
