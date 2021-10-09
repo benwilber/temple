@@ -1,12 +1,12 @@
 name: temple
 version: "0.1.0"
-author: Ben Wilber <benwilber@gmail.com>
+author: Ben Wilber <benwilber@pm.me>
 about: Commandline template renderer
 args:
     - env:
         short: E
         long: env
-        help: Reads context input from environment variables
+        help: Reads context input from the environment
         conflicts_with:
             - context
             - format
@@ -23,8 +23,7 @@ args:
         long: format
         value_name: FORMAT
         help: >
-            The context input format.  The program will normally try to discover the context input format automatically.
-            If that doesn't work, or yields unexpected results, then this option can be given explicitly.  This is most often
+            The context input format.  The program will try to discover the context input format automatically, but if that doesn't work, or if it yields unexpected results, then this option can be given explicitly.  It is most often
             required when reading context input from the standard input
         takes_value: true
         possible_values:
@@ -51,7 +50,7 @@ args:
         help: >
             The directory to search for additional templates when using "{% extends ... %}" or "{% include ... %}" template tags
         takes_value: true
-        env: TEMPLE_TEMPLATES_PATH
+        env: TEMPLE_TEMPLATES
     - extensions:
         short: e
         long: extensions

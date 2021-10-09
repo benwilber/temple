@@ -130,3 +130,17 @@
     [[ $status == 0 ]]
     [[ $output == "bar" ]]
 }
+
+@test "output-file" {
+    mkdir -p outputs
+    run $TEMPLE --output=outputs/output.txt --format=json templates/simple.txt <<< '{"FOO": "bar"}'
+    [[ $status == 0 ]]
+    [[ "$(cat outputs/output.txt)" == "bar" ]]
+}
+
+@test "output-file-exists" {
+    mkdir -p outputs
+    touch outputs/output.txt
+    run $TEMPLE --output=outputs/output.txt --format=json templates/simple.txt <<< '{"FOO": "bar"}'
+    [[ $status == 73 ]]
+}

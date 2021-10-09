@@ -49,31 +49,36 @@ fn main() {
     let mut source = Source::new();
 
     if let Some(templates) = matches.value_of("templates") {
-        let exts = matches
+        let extensions = matches
             .value_of("extensions")
             .unwrap()
             .split(',')
-            .map(|ext| ext.trim().strip_prefix('.').unwrap_or(ext).trim())
+            .map(|extension| {
+                extension
+                    .trim()
+                    .strip_prefix('.')
+                    .unwrap_or(extension)
+                    .trim()
+            })
             .collect::<Vec<_>>();
-
-        match source.load_from_path(templates, &exts) {
-            Ok(_) => {}
-            Err(e) => {
-                return error_exit(&format!("{}", e), exitcode::IOERR);
-            }
-        };
+        source
+            .load_from_path(templates, &extensions)
+            .map_err(|e| error_exit(&format!("{}", e), exitcode::IOERR))
+            .unwrap();
     }
 
-    let template = matches.value_of("TEMPLATE").unwrap();
-    let template_name = format!("__temple_base__/{}", template);
+    let template_path = matches.value_of("TEMPLATE").unwrap();
+    let template_name = format!("__temple_base__/{}", template_path);
 
-    match fs::read_to_string(template) {
-        Ok(content) => match source.add_template(&template_name, content) {
-            Ok(_) => {}
-            Err(e) => {
-                return error_exit(&format!("{}", e), exitcode::DATAERR);
-            }
-        },
+    match fs::read_to_string(template_path) {
+        Ok(template_content) => {
+            source
+                .add_template(&template_name, template_content)
+                .map_err(|e| {
+                    error_exit(&format!("{}", e), exitcode::DATAERR);
+                })
+                .unwrap();
+        }
         Err(e) => {
             return error_exit(&format!("{}", e), exitcode::IOERR);
         }
@@ -135,7 +140,7 @@ fn main() {
 
     env.set_source(source);
 
-    let tmpl = env.get_template(&template_name).unwrap();
+    let template = env.get_template(&template_name).unwrap();
     let rendered;
 
     match (context_format, context_content) {
@@ -146,7 +151,7 @@ fn main() {
                     return error_exit(&format!("{}", e), exitcode::DATAERR);
                 }
             };
-            rendered = tmpl.render(context).unwrap();
+            rendered = template.render(context).unwrap();
         }
         (ContextFormat::Yaml, Some(context_content)) => {
             let context: serde_yaml::Value = match serde_yaml::from_str(&context_content) {
@@ -155,7 +160,7 @@ fn main() {
                     return error_exit(&format!("{}", e), exitcode::DATAERR);
                 }
             };
-            rendered = tmpl.render(context).unwrap();
+            rendered = template.render(context).unwrap();
         }
         (ContextFormat::Env, None) => {
             let mut context = HashMap::new();
@@ -164,30 +169,39 @@ fn main() {
                 context.insert(key, value);
             }
 
-            rendered = tmpl.render(context).unwrap();
+            rendered = template.render(context).unwrap();
         }
-        _ => unreachable!(),
+        _ => {
+            // This shouldn't be possible if clap is validating the CLI correctly.
+            unreachable!()
+        }
     }
 
     match matches.value_of("output") {
         Some("-") | None => {
             print!("{}", rendered);
         }
-        Some(output) => {
-            let open_result;
+        Some(output_file_path) => {
+            let open_output_file_result;
 
             if matches.is_present("force") {
-                open_result = OpenOptions::new().write(true).create(true).open(output);
+                open_output_file_result = OpenOptions::new()
+                    .write(true)
+                    .create(true)
+                    .open(output_file_path);
             } else {
-                open_result = OpenOptions::new().write(true).create_new(true).open(output);
+                open_output_file_result = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(output_file_path);
             }
 
-            match open_result {
-                Ok(f) => {
-                    write!(&f, "{}", &rendered).unwrap();
+            match open_output_file_result {
+                Ok(file) => {
+                    write!(&file, "{}", &rendered).unwrap();
                 }
                 Err(e) => {
-                    let msg = format!("{}: {}", output, e);
+                    let msg = format!("{}: {}", output_file_path, e);
                     error_exit(&msg, exitcode::CANTCREAT);
                 }
             }
