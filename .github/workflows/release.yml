@@ -139,7 +139,7 @@ jobs:
       run: strip "target/${{ matrix.target }}/release/temple"
 
     - name: Strip release binary (arm)
-      if: matrix.build == "linux-arm"
+      if: matrix.build == 'linux-arm'
       run: |
         docker run --rm -v \
           "$PWD/target:/target:Z" \
