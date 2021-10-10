@@ -6,6 +6,29 @@ In addition to JSON, `temple` can also read context inputs as YAML, and from the
 
 Templates are rendered using [MiniJinja](https://github.com/mitsuhiko/minijinja), a port of the [Jinja2](https://jinja2docs.readthedocs.io/en/stable/) Python templating library for Rust.  `temple` supports any of the templating features that MiniJinja supports.  Visit those docs for more comprehensive examples and documentation about the templating language.
 
+# Installing
+
+Pre-compiled binaries are available in the [releases section](https://github.com/benwilber/temple/releases) for the most common platforms.
+
+## Homebrew
+The program can be installed from Homebrew with:
+
+```sh
+$ brew tap benwilber/temple https://github.com/benwilber/temple
+$ brew install temple
+$ temple --version
+temple 0.2.1
+```
+
+## Source
+The program can be compiled from sources using standard Rust/Cargo toolchain.
+
+```sh
+$ cargo build --release
+$ ./target/release/temple --version
+temple 0.2.1
+```
+
 # Basic examples
 ```sh
 $ curl -s https://sunspot.io/time.json | temple -F json datetime.html
