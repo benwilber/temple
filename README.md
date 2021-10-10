@@ -147,7 +147,7 @@ test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
 # Acknowledgments
 
 * [MiniJinja](https://github.com/mitsuhiko/minijinja) - The template engine
-* [ripgrep](https://github.com/BurntSushi/ripgrep) - The Github CI build/packaging system
+* [ripgrep](https://github.com/BurntSushi/ripgrep) - The Github workflows
 
 # Reporting bugs
 Report bugs in the [bug tracker](https://github.com/benwilber/temple/issues)
