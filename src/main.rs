@@ -133,6 +133,26 @@ fn main() {
     }
 
     let mut env = Environment::new();
+    let lua = rlua::Lua::new();
+
+    lua.context(|lua_ctx| {
+        lua_ctx.load(include_str!("temple.lua")).exec().unwrap();
+        let globals = lua_ctx.globals();
+        let temple: rlua::Table = globals.get("temple").unwrap();
+        let filters: rlua::Table = temple.get("_filters").unwrap();
+        let concat2: rlua::Function = filters.get("concat2").unwrap();
+
+        env.add_filter(
+            "concat2",
+            |_env: &Environment,
+             s1: String,
+             s2: String|
+             -> anyhow::Result<String, minijinja::Error> {
+                let res: String = concat2.call::<_, String>((s1, s2)).unwrap();
+                Ok(res)
+            },
+        );
+    });
 
     if matches.is_present("no_auto_escape") {
         env.set_auto_escape_callback(|_| minijinja::AutoEscape::None);
