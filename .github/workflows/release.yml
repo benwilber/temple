@@ -135,7 +135,7 @@ jobs:
       run: ${{ env.CARGO }} build --verbose --release ${{ env.TARGET_FLAGS }}
 
     - name: Strip release binary (linux and macos)
-      if: matrix.build == "linux" || matrix.build == "macos"
+      if: matrix.build == 'linux' || matrix.build == 'macos'
       run: strip "target/${{ matrix.target }}/release/temple"
 
     - name: Strip release binary (arm)
