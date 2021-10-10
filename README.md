@@ -17,7 +17,7 @@ The program can be installed from Homebrew with:
 $ brew tap benwilber/temple https://github.com/benwilber/temple
 $ brew install temple
 $ temple --version
-temple 0.3.0
+temple 0.3.1
 ```
 
 ## Source
@@ -26,7 +26,7 @@ The program can be compiled from sources using standard Rust/Cargo toolchain.
 ```sh
 $ cargo build --release
 $ ./target/release/temple --version
-temple 0.3.0
+temple 0.3.1
 ```
 
 # Examples
@@ -97,7 +97,7 @@ $ temple --help
 ```
 
 ```
-temple 0.3.0
+temple 0.3.1
 Ben Wilber <benwilber@pm.me>
 Commandline template renderer
 
