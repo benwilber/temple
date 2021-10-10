@@ -90,6 +90,24 @@ ARGS:
     <TEMPLATE>    The template file to render with the given context input
 ```
 
+# FAQ
+
+## Does `temple` have a configuration file?
+
+No.
+
+However, some common configuration options can be provided as environment variables instead of on the commandline.  For example, if you have a templates directory containing Markdown files (`.md`), and you only ever deal with JSON context data, then you can export the following options in your shell profile script:
+
+```sh
+export TEMPLE_TEMPLATES=/path/to/templates
+export TEMPLE_TEMPLATE_EXTENSIONS=md
+export TEMPLE_CONTEXT_FORMAT=json
+```
+
+**NOTE**
+
+Options given on the commandline will always override the same options given in the environment.
+
 # Tests
 ```sh
 $ make test

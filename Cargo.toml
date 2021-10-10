@@ -1,6 +1,18 @@
 [package]
 name = "temple"
 version = "0.1.0"
+authors = ["Ben Wilber <benwilber@pm.me>"]
+description = """
+A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.
+"""
+documentation = "https://github.com/benwilber/temple"
+homepage = "https://github.com/benwilber/temple"
+repository = "https://github.com/benwilber/temple"
+readme = "README.md"
+keywords = ["templates", "jinja"]
+categories = ["command-line-utilities", "text-processing", "template-engine"]
+license-file = "LICENSE"
+exclude = ["HomebrewFormula"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
