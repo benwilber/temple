@@ -1,14 +1,14 @@
 class Temple < Formula
-  version "0.2.1"
+  version "0.3.0"
   desc "A commandline program that renders template files with structured context inputs. It is most often used to transform JSON data from a web API to a presentation format such as HTML."
   homepage "https://github.com/benwilber/temple"
 
   if OS.mac?
     url "https://github.com/benwilber/temple/releases/download/#{version}/temple-#{version}-x86_64-apple-darwin.tar.gz"
-    sha256 "7f2c405d210232d3097b7ceb82af1acb3be3e6e5c3cb0123007b80419222505d"
+    sha256 "425e97bd31105f36d69095438055e2e2ca42dd7af32fb5d6dc10d4fe17dc3e72"
   elsif OS.linux?
     url "https://github.com/benwilber/temple/releases/download/#{version}/temple-#{version}-x86_64-unknown-linux-musl.tar.gz"
-    sha256 "2067d9abe10ca57269c7667598561c2fc5e4aa640a47489c0e80a97da8f8ccbf"
+    sha256 "c43e407337105bf7716d2162efbc377dab8f7737475f5d08c0ed8ede0a08d4fb"
   end
 
   def install
