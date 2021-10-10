@@ -53,7 +53,7 @@ $ temple --help
 ```
 
 ```
-temple 0.1.0
+temple 0.2.0
 Ben Wilber <benwilber@pm.me>
 Commandline template renderer
 

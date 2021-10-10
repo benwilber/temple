@@ -17,10 +17,10 @@ name: release
 on:
   push:
     # Enable when testing release infrastructure on a branch.
-    branches:
-    - workflows
-    # tags:
-    # - "[0-9]+.[0-9]+.[0-9]+"
+    # branches:
+    # - workflows
+    tags:
+    - "[0-9]+.[0-9]+.[0-9]+"
 jobs:
   create-release:
     name: create-release
@@ -152,17 +152,17 @@ jobs:
       run: |
         outdir="$(ci/cargo-out-dir "${{ env.TARGET_DIR }}")"
         staging="temple-${{ needs.create-release.outputs.TEMPLE_VERSION }}-${{ matrix.target }}"
-        mkdir -p "$staging/doc"
+        mkdir -p "$staging/{bin,doc}"
 
         cp {README.md,LICENSE} "$staging/"
         cp {CHANGELOG.md,GUIDE.md} "$staging/doc/"
 
         if [ "${{ matrix.os }}" = "windows-2019" ]; then
-          cp "target/${{ matrix.target }}/release/temple.exe" "$staging/"
+          cp "target/${{ matrix.target }}/release/temple.exe" "$staging/bin/"
           7z a "$staging.zip" "$staging"
           echo "ASSET=$staging.zip" >> $GITHUB_ENV
         else
-          cp "target/${{ matrix.target }}/release/temple" "$staging/"
+          cp "target/${{ matrix.target }}/release/temple" "$staging/bin/"
           tar czf "$staging.tar.gz" "$staging"
           echo "ASSET=$staging.tar.gz" >> $GITHUB_ENV
         fi
