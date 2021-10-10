@@ -8,7 +8,7 @@ Templates are rendered using [MiniJinja](https://github.com/mitsuhiko/minijinja)
 
 # Installing
 
-Pre-compiled binaries are available in the [releases section](https://github.com/benwilber/temple/releases) for the most common platforms.
+Pre-compiled binaries are available in the [releases section](https://github.com/benwilber/temple/releases) for most common platforms.
 
 ## Homebrew
 The program can be installed from Homebrew with:

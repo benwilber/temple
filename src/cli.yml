@@ -23,8 +23,9 @@ args:
         long: format
         value_name: FORMAT
         help: >
-            The context input format.  The program will try to discover the context input format automatically, but if that doesn't work, or if it yields unexpected results, then this option can be given explicitly.  It is most often
-            required when reading context input from the standard input
+            The context input format.  The program will try to discover the context input format automatically.
+            But if that doesn't work, or if it yields unexpected results, then this option can be given explicitly.
+            It is most often required when reading context input from the standard input
         takes_value: true
         possible_values:
             - json
@@ -65,7 +66,8 @@ args:
         short: n
         long: no-auto-escape
         help: >
-            Disables template auto-escaping.  When auto-escaping is on, which is the default, special characters in context input values will be escaped when
+            Disables template auto-escaping.  When auto-escaping is on, which is the default,
+            special characters in context input values will be escaped when
             rendering template files that end with .htm, .html, or .xml.
     - TEMPLATE:
         help: The template file to render with the given context input
