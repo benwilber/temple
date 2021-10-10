@@ -1,6 +1,6 @@
 [package]
 name = "temple"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Ben Wilber <benwilber@pm.me>"]
 description = """
 A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.
