@@ -48,7 +48,7 @@ fn main() {
     let matches = App::from_yaml(cli).get_matches();
     let mut source = Source::new();
 
-    if let Some(templates) = matches.value_of("templates") {
+    if let Some(templates_path) = matches.value_of("templates") {
         let extensions = matches
             .value_of("extensions")
             .unwrap()
@@ -62,7 +62,7 @@ fn main() {
             })
             .collect::<Vec<_>>();
         source
-            .load_from_path(templates, &extensions)
+            .load_from_path(templates_path, &extensions)
             .map_err(|e| error_exit(&format!("{}", e), exitcode::IOERR))
             .unwrap();
     }
@@ -127,7 +127,7 @@ fn main() {
 
     if context_format == ContextFormat::Unknown {
         return error_exit(
-            "unknown or ambiguous context input format.  Try adding -F/--format=<format>",
+            "unknown or ambiguous context input format. Try adding -F/--format=<format>",
             exitcode::USAGE,
         );
     }

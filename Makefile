@@ -24,11 +24,10 @@ testall:
 
 testcli: TEMPLE ?= "$(shell pwd)/target/debug/temple"
 testcli: build
-	cd tests && TEMPLE=$(TEMPLE) bats tests.bats
-
-testclirelease: TEMPLE ?= "$(shell pwd)/target/release/temple"
-testclirelease: release
-	cd tests && TEMPLE=$(TEMPLE) bats tests.bats
+	cd tests && \
+		mkdir -p outputs; \
+		TEMPLE=$(TEMPLE) bats tests.bats; \
+		rm -r outputs
 
 ready: format lint testcli
 	@echo "Ready!"

@@ -1,2 +1,2 @@
 {% extends "extends_base.txt" %}
-{% block base %}{{ FOO }}{% endblock base %}
+{% block base %}{{ FOO }}{% endblock %}

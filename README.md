@@ -1,13 +1,10 @@
 # `temple`
 
-A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.  It's a basic, yet flexible tool that can be extended with [Lua](https://www.lua.org/) to perform any kind of advanced templating task from the commandline or a shell pipeline.
+A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.
 
-In addition to JSON, `temple` can also read context inputs as YAML, simple `KEY=value`, and from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Heroku-ish type environments.
+In addition to JSON, `temple` can also read context inputs as YAML, and from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Herokuish type environments.
 
 Templates are rendered using [MiniJinja](https://github.com/mitsuhiko/minijinja), a port of the [Jinja2](https://jinja2docs.readthedocs.io/en/stable/) Python templating library for Rust.  `temple` supports any of the templating features that MiniJinja supports.  Visit those docs for more comprehensive examples and documentation about the templating language.
-
-`temple` supports loading custom template filters from Lua scripts.  See the examples in the [Lua scripting](#lua-scripting) section for more information.
-
 
 # Basic examples
 ```sh
@@ -54,38 +51,40 @@ $ curl -s https://sunspot.io/time.json | temple -F json datetime.html
 ```sh
 $ temple --help
 temple 0.1.0
-Ben Wilber <benwilber@gmail.com>
-A commandline program that renders template files with structured context inputs
+Ben Wilber <benwilber@pm.me>
+Commandline template renderer
 
 USAGE:
     temple [FLAGS] [OPTIONS] <TEMPLATE>
 
 FLAGS:
-    -e, --env              Reads context input from the environment
-    -f, --force            Overwrites output files if they already exist.  By default, the program will not overwite
-                           files that already exist
-    -h, --help             Prints help information
-    -n, --no-auto-escape    Disables template autoescaping.  When auto-escaping is on, which is the default, special
-                           characters in context input values will be escaped when rendering template files that end
-                           with .html, .htm, or .xml.
-    -V, --version          Prints version information
+    -E, --env               Reads context input from the environment
+    -f, --force             Overwrites output files if they already exist.  By default, the program will not overwite files
+                            that already exist
+    -h, --help              Prints help information
+    -n, --no-auto-escape    Disables template auto-escaping.  When auto-escaping is on, which is the default, special
+                            characters in context input values will be escaped when rendering template files that end with
+                            .htm, .html, or .xml.
+    -V, --version           Prints version information
 
 OPTIONS:
-    -c, --context <FILE>           The context input file.  If FILE is a single dash ("-"), or absent, reads from the
-                                   standard input
-                                    [default: -]
-    -F, --format <FORMAT>          The context input format.  The program will normally try to discover the context
-                                   input format automatically. But if that doesn't work, or yields unexpected results,
-                                   then this option can be given explicitly.  This is most often required when reading
-                                   context input from the standard input
-                                    [possible values: json, yaml, kv]
-    -l, --load <PATH>              The Lua file or directory to load custom scripts.  If PATH is a directory, then loads
-                                   the file "init.lua" located at the top-level
-    -o, --output <FILE>            The rendered output file.  If FILE is a single dash ("-"), or absent, writes to the
-                                   standard output
-                                    [default: -]
-    -t, --templates <DIRECTORY>    The directory to search for additional templates for use with "{% extends ... %}" or
-                                   "{% include ... %}" template tags
+    -c, --context <FILE>             The context input file.  If FILE is a single dash ("-"), or absent, reads from the
+                                     standard input
+                                      [default: -]
+    -e, --extensions <EXTENSIONS>    The list of file extensions that are considered to be templates.  Hidden files are
+                                     always ignored. Separate multiple file extensions with a comma (",")
+                                      [env: TEMPLE_TEMPLATE_EXTENSIONS=]  [default: htm,html,txt]
+    -F, --format <FORMAT>            The context input format.  The program will try to discover the context input format
+                                     automatically, but if that doesn't work, or if it yields unexpected results, then this
+                                     option can be given explicitly.  It is most often required when reading context input
+                                     from the standard input
+                                      [env: TEMPLE_CONTEXT_FORMAT=]  [possible values: json, yaml]
+    -o, --output <FILE>              The rendered output file.  If FILE is a single dash ("-"), or absent, writes to the
+                                     standard output
+                                      [default: -]
+    -t, --templates <DIRECTORY>      The directory to search for additional templates when using "{% extends ... %}" or "{%
+                                     include ... %}" template tags
+                                      [env: TEMPLE_TEMPLATES=]
 
 ARGS:
     <TEMPLATE>    The template file to render with the given context input
@@ -102,22 +101,23 @@ bats tests/tests.bats
  ✓ env
  ✓ json-stdin
  ✓ yaml-stdin
- ✓ kv-stdin
  ✓ json-file
  ✓ yaml-file
- ✓ kv-file
  ✓ json-empty
  ✓ yaml-empty
- ✓ kv-empty
  ✓ invalid-empty
  ✓ invalid-json-malformed
  ✓ invalid-yaml-malformed
  ✓ extends
  ✓ include
- ✓ -escape
+ ✓ auto-escape
  ✓ no-auto-escape
+ ✓ options-from-env-templates
+ ✓ options-from-env-context-format
+ ✓ output-file
+ ✓ output-file-exists
 
-17 tests, 0 failures
+18 tests, 0 failures
 ```
 
 # Author
@@ -127,7 +127,6 @@ bats tests/tests.bats
 # Acknowledgments
 
 * [MiniJinja](https://github.com/mitsuhiko/minijinja)
-* [rlua](https://github.com/amethyst/rlua)
 
 # Reporting bugs
 Report bugs in the [bug tracker](https://github.com/benwilber/temple/issues)
