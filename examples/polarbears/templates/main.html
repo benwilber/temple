@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+Polar Bears
+{% endblock %}
+
+{% block body %}
+<h1>Polar Bears</h1>
+
+<table>
+  <thead>
+    <tr>
+      {%- for column in columns %}
+      <th>{{ column }}</th>
+      {%- endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {%- for row in rows %}
+    {% include "row.html" %}
+    {%- endfor %}
+  </tbody>
+</table>
+{% endblock %}

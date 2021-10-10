@@ -1,7 +1,7 @@
 name: temple
 version: "0.3.0"
 author: Ben Wilber <benwilber@pm.me>
-about: Commandline template renderer
+about: A fast commandline template renderer
 args:
     - env:
         short: E

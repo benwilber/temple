@@ -1,6 +1,6 @@
 # `temple`
 
-A commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.
+A fast commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.
 
 In addition to JSON, `temple` can also read context inputs as YAML, and from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Herokuish type environments.
 
@@ -29,42 +29,63 @@ $ ./target/release/temple --version
 temple 0.3.0
 ```
 
-# Basic examples
+# Examples
+
+Check out the [examples](examples) directory.
+
+This example renders the USGS Polar Bears [JSON dataset](https://polar-bears.vercel.app/polar-bears/USGS_WC_eartags_output_files_2009-2011-Status) as an HTML table.
+
 ```sh
-$ curl -s https://sunspot.io/time.json | temple -F json datetime.html
+$ curl -s https://polar-bears.vercel.app/polar-bears/USGS_WC_eartags_output_files_2009-2011-Status.json | \
+  temple \
+  --format=json \
+  --templates=examples/polarbears/templates \
+  examples/polarbears/templates/main.html
 ```
-#### Context input - `time.json`
-
-```json
-{
-  "datetime": "2021-09-28T19:58:25+0000"
-}
-```
-
-#### Template - `datetime.html`
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Date/Time</title>
+    <title>
+      Polar Bears
+    </title>
   </head>
-  <body>
-    <pre>{{ datetime }}</pre>.
-  </body>
-</html>
-```
-
-#### Rendered
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Date/Time</title>
-  </head>
-  <body>
-    <pre>2021-09-28T19:58:25+0000</pre>.
+  <body>    
+    <h1>Polar Bears</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>rowid</th>
+          <th>DeployID</th>
+          <th>Ptt</th>
+          <th>Received</th>
+          <th>LocationQuality</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Transmits</th>
+          <th>BattVoltage</th>
+          <th>TransmitCurrent</th>
+          <th>Temperature</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>20992</td>
+          <td>80435</td>
+          <td>12&#x2f;9&#x2f;2009 2:49</td>
+          <td>1</td>
+          <td>47.67599869</td>
+          <td>-122.1329956</td>
+          <td>128</td>
+          <td>3.36</td>
+          <td>0.312</td>
+          <td>21.63</td>
+        </tr>
+        <!-- [...] -->
+      </tbody>
+    </table>
   </body>
 </html>
 ```
