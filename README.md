@@ -50,6 +50,9 @@ $ curl -s https://sunspot.io/time.json | temple -F json datetime.html
 
 ```sh
 $ temple --help
+```
+
+```
 temple 0.1.0
 Ben Wilber <benwilber@pm.me>
 Commandline template renderer
