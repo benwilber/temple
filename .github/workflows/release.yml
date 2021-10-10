@@ -152,7 +152,7 @@ jobs:
       run: |
         outdir="$(ci/cargo-out-dir "${{ env.TARGET_DIR }}")"
         staging="temple-${{ needs.create-release.outputs.TEMPLE_VERSION }}-${{ matrix.target }}"
-        mkdir -p "$staging/{bin,doc}"
+        mkdir -p "$staging"/{bin,doc}
 
         cp {README.md,LICENSE} "$staging/"
         cp {CHANGELOG.md,GUIDE.md} "$staging/doc/"
