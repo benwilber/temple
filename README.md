@@ -122,7 +122,7 @@ ARGS:
 
 No.
 
-However, some common configuration options can be provided as environment variables instead of on the commandline.  For example, if you have a templates directory containing Markdown files (`.md`), and you only ever deal with JSON context data, then you can export the following options in your shell profile script:
+However, some common configuration options can be provided as environment variables instead of on the commandline.  For example, if you have a templates directory containing Markdown files (`.md`), and you normally only deal with JSON context data, then you can export the following options in your shell profile script:
 
 ```sh
 export TEMPLE_TEMPLATES=/path/to/templates
