@@ -105,7 +105,7 @@ jobs:
         override: true
 
     - name: Use Cross
-      if: matrix.target != ""
+      if: matrix.target != ''
       run: |
         cargo install cross
         echo "CARGO=cross" >> $GITHUB_ENV
