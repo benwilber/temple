@@ -91,33 +91,32 @@ ARGS:
 ```
 
 # Tests
-Testing uses the [BATS](https://github.com/sstephenson/bats) testing framework.  The tests can be run like:
-
 ```sh
-$ make testcli
-cargo build
-    Finished dev [unoptimized + debuginfo] target(s) in 0.04s
-bats tests/tests.bats
- ✓ env
- ✓ json-stdin
- ✓ yaml-stdin
- ✓ json-file
- ✓ yaml-file
- ✓ json-empty
- ✓ yaml-empty
- ✓ invalid-empty
- ✓ invalid-json-malformed
- ✓ invalid-yaml-malformed
- ✓ extends
- ✓ include
- ✓ auto-escape
- ✓ no-auto-escape
- ✓ options-from-env-templates
- ✓ options-from-env-context-format
- ✓ output-file
- ✓ output-file-exists
+$ make test
+cargo test
+    Finished test [unoptimized + debuginfo] target(s) in 0.03s
+     Running unittests (target/debug/deps/temple-3a6cdad72a8d2255)
 
-18 tests, 0 failures
+running 17 tests
+test tests::invalid_yaml_malformed ... ok
+test tests::invalid_json_malformed ... ok
+test tests::extends ... ok
+test tests::include ... ok
+test tests::auto_escape ... ok
+test tests::invalid_empty ... ok
+test tests::env ... ok
+test tests::json_empty ... ok
+test tests::options_from_env_context_format ... ok
+test tests::no_auto_escape ... ok
+test tests::options_from_env_templates ... ok
+test tests::json_file ... ok
+test tests::json_stdin ... ok
+test tests::yaml_empty ... ok
+test tests::yaml_file ... ok
+test tests::yaml_stdin ... ok
+test tests::output_file ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
 ```
 
 # Author
@@ -126,7 +125,8 @@ bats tests/tests.bats
 
 # Acknowledgments
 
-* [MiniJinja](https://github.com/mitsuhiko/minijinja)
+* [MiniJinja](https://github.com/mitsuhiko/minijinja) - The template engine
+* [ripgrep](https://github.com/BurntSushi/ripgrep) - The Github CI build/packaging system
 
 # Reporting bugs
 Report bugs in the [bug tracker](https://github.com/benwilber/temple/issues)

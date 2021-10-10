@@ -3,7 +3,7 @@ all: build
 build:
 	cargo build
 
-release:
+buildrelease:
 	cargo build --release
 
 format: addrustfmt
@@ -17,19 +17,10 @@ doc:
 	cargo doc
 
 test:
+	@mkdir -p tests/outputs
 	cargo test
 
-testall:
-	cargo test --all-features
-
-testcli: TEMPLE ?= "$(shell pwd)/target/debug/temple"
-testcli: build
-	cd tests && \
-		mkdir -p outputs; \
-		TEMPLE=$(TEMPLE) bats tests.bats; \
-		rm -r outputs
-
-ready: format lint testcli
+ready: format lint test
 	@echo "Ready!"
 
 addrustfmt:
@@ -38,4 +29,4 @@ addrustfmt:
 addclippy:
 	@rustup component add clippy 2> /dev/null
 
-.PHONY: all build release format lint doc test testall addrustfmt addclippy
+.PHONY: all build buildrelease format lint doc test ready addrustfmt addclippy

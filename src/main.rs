@@ -208,3 +208,360 @@ fn main() {
         }
     }
 }
+
+#[cfg(test)]
+#[macro_use]
+extern crate pretty_assertions;
+
+#[cfg(test)]
+mod tests {
+    use shlex;
+    use std::ffi::OsString;
+    use std::fs;
+    use std::path::Path;
+    use subprocess::{ExitStatus, Popen, PopenConfig, Redirection};
+
+    // Run a commandline and return a triple of (exit_code, stdout, stderr)
+    fn run_cmd(
+        cmd: &str,
+        stdin: Option<&str>,
+        env: Option<Vec<(OsString, OsString)>>,
+    ) -> anyhow::Result<(Option<String>, Option<String>, ExitStatus)> {
+        let mut p = Popen::create(
+            &shlex::split(cmd).unwrap(),
+            PopenConfig {
+                stdout: Redirection::Pipe,
+                stderr: Redirection::Pipe,
+                stdin: if stdin.is_some() {
+                    Redirection::Pipe
+                } else {
+                    Redirection::None
+                },
+                env: env,
+                ..Default::default()
+            },
+        )?;
+        let (out, err) = p.communicate(stdin)?;
+        let ret = p.wait().unwrap();
+        Ok((out, err, ret))
+    }
+
+    #[test]
+    fn env() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --env tests/templates/simple.txt",
+            None,
+            Some(vec![("FOO".into(), "bar".into())]),
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn json_stdin() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --format=json tests/templates/simple.txt",
+            Some(&fs::read_to_string("tests/contexts/simple.json").unwrap()),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple -F json tests/templates/simple.txt",
+            Some(&fs::read_to_string("tests/contexts/simple.json").unwrap()),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn yaml_stdin() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --format=yaml tests/templates/simple.txt",
+            Some(&fs::read_to_string("tests/contexts/simple.yml").unwrap()),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple -F yaml tests/templates/simple.txt",
+            Some(&fs::read_to_string("tests/contexts/simple.yml").unwrap()),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn json_file() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/simple.json tests/templates/simple.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple -c tests/contexts/simple.json -F json tests/templates/simple.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn yaml_file() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/simple.yml tests/templates/simple.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple -c tests/contexts/simple.yml -F yaml tests/templates/simple.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn json_empty() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --format=json tests/templates/simple.txt",
+            Some("{}"),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("".to_string()));
+        assert_eq!(err, Some("".to_string()));
+
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple -F json tests/templates/simple.txt",
+            Some("{}"),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn yaml_empty() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --format=yaml tests/templates/simple.txt",
+            Some("-"),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("".to_string()));
+        assert_eq!(err, Some("".to_string()));
+
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple -F yaml tests/templates/simple.txt",
+            Some("-"),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn invalid_empty() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/empty.txt tests/templates/simple.txt",
+            Some("-"),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(64));
+        assert_eq!(out, Some("".to_string()));
+        assert_ne!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn invalid_json_malformed() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/invalid_malformed.json tests/templates/simple.txt",
+            Some("-"),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(65));
+        assert_eq!(out, Some("".to_string()));
+        assert_ne!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn invalid_yaml_malformed() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/invalid_malformed.yml tests/templates/simple.txt",
+            Some("-"),
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(65));
+        assert_eq!(out, Some("".to_string()));
+        assert_ne!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn extends() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/simple.json --templates=tests/templates tests/templates/extends.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("EXTENDS: bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn include() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/simple.json --templates=tests/templates tests/templates/include.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("INCLUDE: bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn auto_escape() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/auto_escape.json --templates=tests/templates tests/templates/auto_escape.html",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(
+            out,
+            Some("&lt;script&gt;bar&lt;&#x2f;script&gt;".to_string())
+        );
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn no_auto_escape() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --no-auto-escape --context=tests/contexts/auto_escape.json --templates=tests/templates tests/templates/auto_escape.html",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("<script>bar</script>".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn options_from_env_templates() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --context=tests/contexts/simple.json tests/templates/include.txt",
+            None,
+            Some(vec![("TEMPLE_TEMPLATES".into(), "tests/templates".into())]),
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("INCLUDE: bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn options_from_env_context_format() {
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple tests/templates/simple.txt",
+            Some("{\"FOO\": \"bar\"}"),
+            Some(vec![("TEMPLE_CONTEXT_FORMAT".into(), "json".into())]),
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(out, Some("bar".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+
+    #[test]
+    fn output_file() {
+        let _ = fs::remove_file(Path::new("tests/outputs/output.txt"));
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --output=tests/outputs/output.txt --context=tests/contexts/simple.json tests/templates/simple.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(
+            Some(fs::read_to_string("tests/outputs/output.txt").unwrap()),
+            Some("bar".to_string())
+        );
+        assert_eq!(out, Some("".to_string()));
+        assert_eq!(err, Some("".to_string()));
+
+        // Run it again and make sure it doesn't overwrite the previous output file.
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --output=tests/outputs/output.txt --context=tests/contexts/simple.json tests/templates/simple.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(73));
+        assert_eq!(
+            Some(fs::read_to_string("tests/outputs/output.txt").unwrap()),
+            Some("bar".to_string())
+        );
+        assert_eq!(out, Some("".to_string()));
+        assert_ne!(err, Some("".to_string()));
+
+        // Run it again and make sure it overwrote the previous output file.
+        let (out, err, ret) = run_cmd(
+            "target/debug/temple --force --output=tests/outputs/output.txt --context=tests/contexts/simple.json tests/templates/simple.txt",
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(ret, ExitStatus::Exited(0));
+        assert_eq!(
+            Some(fs::read_to_string("tests/outputs/output.txt").unwrap()),
+            Some("bar".to_string())
+        );
+        assert_eq!(out, Some("".to_string()));
+        assert_eq!(err, Some("".to_string()));
+    }
+}
