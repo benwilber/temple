@@ -122,7 +122,7 @@ bats tests/tests.bats
 
 # Author
 
-`temple` is written by Ben Wilber <benwilber@gmail.com>
+`temple` is written by Ben Wilber <benwilber@pm.me>
 
 # Acknowledgments
 
