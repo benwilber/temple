@@ -2,7 +2,7 @@
 
 A fast commandline program that renders template files with structured context inputs.  It is most often used to transform JSON data from a web API to a presentation format such as HTML.
 
-In addition to JSON, `temple` can also read context inputs as YAML, and from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in 12-factor/Herokuish type environments.
+In addition to JSON, `temple` can also read context inputs as YAML, and from the environment.  It is sometimes employed as a powerful alternative to tools like `envsubst`, which are used to render configuration files from parameters given as environment variables in [12-Factor](https://12factor.net/)/Herokuish type environments.
 
 Templates are rendered using [MiniJinja](https://github.com/mitsuhiko/minijinja), a port of the [Jinja2](https://jinja2docs.readthedocs.io/en/stable/) Python templating library for Rust.  `temple` supports any of the templating features that MiniJinja supports.  Visit those docs for more comprehensive examples and documentation about the templating language.
 
