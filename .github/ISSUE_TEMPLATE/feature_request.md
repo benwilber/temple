@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: A Feature Request
 about: Suggest a new feature for temple
 title: ""
 labels: ""

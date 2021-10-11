@@ -1,6 +1,6 @@
 ---
-name: Bug report
-about: An issue with temple or any of its supporting crates (MiniJinja, etc.)
+name: A Bug Report
+about: An issue with temple or any of its supporting libraries (MiniJinja, rlua, etc.)
 title: ""
 labels: ""
 assignees: ""
