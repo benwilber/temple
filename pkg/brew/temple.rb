@@ -5,10 +5,10 @@ class Temple < Formula
 
   if OS.mac?
     url "https://github.com/benwilber/temple/releases/download/#{version}/temple-#{version}-x86_64-apple-darwin.tar.gz"
-    sha256 "7662bab79deaccdaeae1a88d74eb1e4345b56f0e08cd9669ff1cb1a79e2240f1"
+    sha256 "ca82e40f7f3ecf0fb47d4cbd26f17724f42193b6ccdc8c361818514b4f84ee92"
   elsif OS.linux?
     url "https://github.com/benwilber/temple/releases/download/#{version}/temple-#{version}-x86_64-unknown-linux-musl.tar.gz"
-    sha256 "98d9c88df4d4371c0626ac4d9d0c98ad8c290be6fb7d894f0884f886257a84bb"
+    sha256 "6b4e3c3ec3997c2f0eafbdf2a667cdf11d66a73e6b47cb03f939ac7ba3a3eb3f"
   end
 
   def install
