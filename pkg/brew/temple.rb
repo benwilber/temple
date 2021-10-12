@@ -1,5 +1,5 @@
 class Temple < Formula
-  version "0.4.0"
+  version "0.4.1"
   desc "A commandline program that renders template files with structured context inputs. It is most often used to transform JSON data from a web API to a presentation format such as HTML."
   homepage "https://github.com/benwilber/temple"
 
