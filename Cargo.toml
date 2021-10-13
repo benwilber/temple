@@ -25,7 +25,7 @@ serde_json = "1.0"
 serde_yaml = "0.8"
 anyhow = "1.0"
 exitcode = "1.1.2"
-rlua = "0.17.1"
+mlua = {version = "0.6.5", features = ["lua54", "send"]}
 
 [dev-dependencies]
 pretty_assertions = "0.6.1"
