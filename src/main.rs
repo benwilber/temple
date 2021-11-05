@@ -16,7 +16,7 @@ enum ContextFormat {
     Unknown,
 }
 
-fn error_exit(msg: &str, code: exitcode::ExitCode) {
+fn error_exit(msg: &str, code: exitcode::ExitCode) -> ! {
     eprintln!("temple: {}", msg);
     std::process::exit(code);
 }
@@ -80,7 +80,7 @@ fn main() {
                 .unwrap();
         }
         Err(e) => {
-            return error_exit(&format!("{}", e), exitcode::IOERR);
+            error_exit(&format!("{}", e), exitcode::IOERR);
         }
     }
 
@@ -104,7 +104,7 @@ fn main() {
                 Ok(content) => Some(content),
                 Err(e) => {
                     let msg = format!("{}", e);
-                    return error_exit(&msg, exitcode::IOERR);
+                    error_exit(&msg, exitcode::IOERR);
                 }
             },
             Some(context_file_path) => {
@@ -118,7 +118,7 @@ fn main() {
                     Ok(content) => Some(content),
                     Err(e) => {
                         let msg = format!("{}: {}", context_file_path, e);
-                        return error_exit(&msg, exitcode::IOERR);
+                        error_exit(&msg, exitcode::IOERR);
                     }
                 }
             }
@@ -126,7 +126,7 @@ fn main() {
     }
 
     if context_format == ContextFormat::Unknown {
-        return error_exit(
+        error_exit(
             "unknown or ambiguous context input format. Try adding -F/--format=<format>",
             exitcode::USAGE,
         );
@@ -148,7 +148,7 @@ fn main() {
             let context: serde_json::Value = match serde_json::from_str(&context_content) {
                 Ok(context) => context,
                 Err(e) => {
-                    return error_exit(&format!("{}", e), exitcode::DATAERR);
+                    error_exit(&format!("{}", e), exitcode::DATAERR);
                 }
             };
             rendered = template.render(context).unwrap();
@@ -157,7 +157,7 @@ fn main() {
             let context: serde_yaml::Value = match serde_yaml::from_str(&context_content) {
                 Ok(context) => context,
                 Err(e) => {
-                    return error_exit(&format!("{}", e), exitcode::DATAERR);
+                    error_exit(&format!("{}", e), exitcode::DATAERR);
                 }
             };
             rendered = template.render(context).unwrap();
